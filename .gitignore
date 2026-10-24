@@ -21,6 +21,8 @@ dist/
 dist_rebuild/
 dist_latest/
 dist_onefile/
+dist_email/
+build_email/
 release_parts/
 release_parts_500/
 *.spec

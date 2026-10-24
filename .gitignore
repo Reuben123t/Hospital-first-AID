@@ -3,6 +3,9 @@ __pycache__/
 .venv/
 venv/
 artifacts_*/
+!artifacts_80min/
+!artifacts_80min/best_model.pt
+!artifacts_80min/validation_metrics.json
 data/
 deck_build/
 presentation_output/

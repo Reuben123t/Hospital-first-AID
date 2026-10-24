@@ -1,0 +1,3 @@
+Set-Location $PSScriptRoot
+& "C:\Users\andre\Reuben\LLM Trainer\liver 50GB\venv\Scripts\python.exe" -m pip install pyinstaller pywebview
+& "C:\Users\andre\Reuben\LLM Trainer\liver 50GB\venv\Scripts\python.exe" -m PyInstaller --noconfirm --clean --name "Accredix" --distpath "dist_rebuild" --workpath "build_rebuild" --windowed --add-data "accreditx_templates;accreditx_templates" --add-data "accreditx_static;accreditx_static" --add-data "models;models" desktop_app.py

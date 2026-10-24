@@ -15,7 +15,9 @@ accreditx.db
 .upload_tmp.nii.gz
 build/
 build_rebuild/
+build_latest/
 dist/
 dist_rebuild/
+dist_latest/
 *.spec
 runtime_test_*.db

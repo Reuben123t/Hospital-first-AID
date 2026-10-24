@@ -172,7 +172,7 @@ def dashboard():
         patients = conn.execute("SELECT p.*, COUNT(s.id) scan_count FROM patients p LEFT JOIN scans s ON s.patient_id=p.id GROUP BY p.id ORDER BY p.created_at DESC").fetchall()
         priority = conn.execute("SELECT s.*, p.patient_code, p.display_name FROM scans s JOIN patients p ON p.id=s.patient_id WHERE s.priority='high' ORDER BY s.created_at DESC").fetchall()
         recent = conn.execute("SELECT s.*, p.patient_code, p.display_name FROM scans s JOIN patients p ON p.id=s.patient_id ORDER BY s.created_at DESC LIMIT 12").fetchall()
-    return render_template("dashboard.html", patients=patients, priority=priority, recent=recent, models={"brain_2d": MODEL_2D.exists(), "brain_3d": MODEL_3D.exists(), "liver": LIVER_MODEL.exists()})
+    return render_template("dashboard.html", patients=patients, priority=priority, recent=recent, latest=recent[0] if recent else None, models={"brain_2d": MODEL_2D.exists(), "brain_3d": MODEL_3D.exists(), "liver": LIVER_MODEL.exists()})
 
 
 @app.post("/patients")
@@ -212,7 +212,10 @@ def add_scan():
     except Exception as exc: flash(f"Scan could not be processed: {exc}", "error"); return redirect(url_for("dashboard"))
     with db() as conn:
         conn.execute("INSERT INTO scans(patient_id, cancer_type, filename, modality, result, confidence, priority, notes, device, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (patient_id, cancer_type, filename, result["modality"], result["result"], result["confidence"], request.form.get("priority", "routine"), request.form.get("notes", ""), result["device"], now()))
-    audit("scan_recorded", {"cancer_type": cancer_type, "priority": request.form.get("priority", "routine")}); flash("Scan recorded in the local audit trail.", "success"); return redirect(url_for("dashboard"))
+    audit("scan_recorded", {"cancer_type": cancer_type, "priority": request.form.get("priority", "routine")})
+    confidence = f" ({result['confidence']:.2f}% confidence)" if result["confidence"] is not None else ""
+    flash(f"AI result: {result['result']}{confidence}. Scan saved to the audit trail.", "success")
+    return redirect(url_for("dashboard"))
 
 
 @app.get("/api/health")

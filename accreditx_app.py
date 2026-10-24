@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import hmac
 import json
 import os
 import sqlite3
@@ -33,6 +34,8 @@ LIVER_MODEL = ROOT / "models" / "liver_3d" / "Leatest1.pth"
 app = Flask(__name__, template_folder="accreditx_templates", static_folder="accreditx_static")
 app.secret_key = os.getenv("ACCREDITX_SECRET_KEY", "change-this-local-demo-secret")
 app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024 * 1024
+LOGIN_EMAIL = os.getenv("ACCREDITX_LOGIN_EMAIL", "demo@accreditx.local").strip().lower()
+LOGIN_PASSWORD = os.getenv("ACCREDITX_LOGIN_PASSWORD", "accreditx-demo")
 MODELS = {}
 oauth = OAuth(app) if OAuth else None
 ALLOWED_SCAN_EXTENSIONS = (".png", ".jpg", ".jpeg", ".nii", ".nii.gz")
@@ -139,6 +142,18 @@ def login(): return render_template("login.html", google_ready=bool(oauth and go
 @app.post("/demo-login")
 def demo_login():
     session["user"] = "demo@accreditx.local"; session["role"] = "research-admin"; audit("demo_login", {}); return redirect(url_for("dashboard"))
+
+@app.post("/password-login")
+def password_login():
+    email = request.form.get("email", "").strip().lower()
+    password = request.form.get("password", "")
+    if not hmac.compare_digest(email, LOGIN_EMAIL) or not hmac.compare_digest(password, LOGIN_PASSWORD):
+        flash("Email or password is incorrect.", "error")
+        return redirect(url_for("login"))
+    session["user"] = LOGIN_EMAIL
+    session["role"] = "research-admin"
+    audit("password_login", {})
+    return redirect(url_for("dashboard"))
 
 @app.get("/auth/google")
 def google_login():

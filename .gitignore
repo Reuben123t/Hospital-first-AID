@@ -21,5 +21,7 @@ dist/
 dist_rebuild/
 dist_latest/
 dist_onefile/
+release_parts/
+release_parts_500/
 *.spec
 runtime_test_*.db

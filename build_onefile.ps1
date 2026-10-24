@@ -1,0 +1,2 @@
+Set-Location $PSScriptRoot
+& "C:\Users\andre\Reuben\LLM Trainer\liver 50GB\venv\Scripts\python.exe" -m PyInstaller --noconfirm --clean --onefile --windowed --name "Accredix" --distpath "dist_onefile" --workpath "build_onefile" --add-data "accreditx_templates;accreditx_templates" --add-data "accreditx_static;accreditx_static" --add-data "models;models" --add-data "artifacts_80min;artifacts_80min" desktop_app.py

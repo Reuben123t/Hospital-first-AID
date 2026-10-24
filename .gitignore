@@ -16,8 +16,10 @@ accreditx.db
 build/
 build_rebuild/
 build_latest/
+build_onefile/
 dist/
 dist_rebuild/
 dist_latest/
+dist_onefile/
 *.spec
 runtime_test_*.db
